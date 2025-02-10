@@ -1,0 +1,6 @@
+/dist/
+/build/
+*.spec
+
+data/resultado.pdf
+historico.pkl
