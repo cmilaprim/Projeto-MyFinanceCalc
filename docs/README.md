@@ -13,30 +13,10 @@ Este projeto é uma aplicação financeira que permite calcular o rendimento de 
 - **Python**: Linguagem de programação principal.
 - **Tkinter**: Biblioteca para criação da interface gráfica.
 - **FPDF**: Biblioteca para geração de PDFs.
-- **Pickle**: Biblioteca usada para salvar o histórico.
+- **Pickle**: Biblioteca usada para salvar o histórico;
 
-## Estrutura do Projeto
+## Como Usar
 
-/Projeto-MyFinanceCalc
-│
-├── src/ # Código-fonte
-│ ├── init.py # Indica que é um pacote
-│ ├── calcula_aplicacao.py
-│ ├── gera_documento.py
-│ ├── historico.py
-│ ├── tela_inicial.py
-│ ├── main.py
-│
-├── data/ # Dados armazenados
-│ ├── historico.pkl
-│
-├── assets/ # Imagens e ícones
-│ ├── icon-investimento.ico
-│ ├── logo-empresa.png
-│
-├── docs/ # Documentação
-│ ├── README.md
-│
-├── requirements.txt # Dependências do projeto
-│
-└── test/ # Testes 
+1. Clone o repositório.
+2. Instale as dependências com `pip install -r requirements.txt`.
+3. Execute o projeto com `python src/main.py`.
