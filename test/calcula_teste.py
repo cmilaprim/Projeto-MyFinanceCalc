@@ -1,5 +1,8 @@
-from src.calcula_aplicacao import Aplicacao
-from src.gera_documento import geraDocumento
+import sys
+sys.path.append('C:/Users/Administrador/Desktop/Projeto-MyFinanceCalc/src')
+
+from calcula_aplicacao import Aplicacao
+from gera_documento import geraDocumento
 
 # Exemplo de uso
 
