@@ -1,3 +1,31 @@
+# import tkinter as tk
+# from tkinter import messagebox
+# from gera_documento import geraDocumento
+# import pickle
+# from calcula_aplicacao import Aplicacao
+# import os
+
+
+# class Historico:
+#     def __init__(self, root):
+#         self.root = root
+#         self.root.title("Histórico de Aplicações")
+#         self.root.geometry("750x400")
+
+#         self.lista_aplicacoes = tk.Listbox(root)
+#         self.lista_aplicacoes.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
+
+#         self.carregar_historico()
+
+#         # Botões
+#         tk.Button(root, text="Adicionar Nova Aplicação", command=self.adicionar_aplicacao).pack(side=tk.LEFT, padx=10, pady=10)
+#         tk.Button(root, text="Editar", command=self.editar_aplicacao).pack(side=tk.LEFT, padx=10, pady=10)
+#         tk.Button(root, text="Excluir", command=self.excluir_aplicacao).pack(side=tk.LEFT, padx=10, pady=10)
+#         tk.Button(root, text="Alterar Taxa Selic", command=self.alterar_taxa_selic).pack(side=tk.LEFT, padx=10, pady=10)
+#         tk.Button(root, text="Voltar", command=self.voltar).pack(side=tk.LEFT, padx=10, pady=10)
+#         tk.Button(root, text="Visualizar PDF", command=self.visualizar_pdf).pack(side=tk.LEFT, padx=10, pady=10)
+#         tk.Button(root, text="Visualizar por Data", command=self.visualizar_data).pack(side=tk.LEFT, padx=10, pady=10)
+
 import tkinter as tk
 from tkinter import messagebox
 from gera_documento import geraDocumento
@@ -10,8 +38,17 @@ class Historico:
     def __init__(self, root):
         self.root = root
         self.root.title("Histórico de Aplicações")
-        self.root.geometry("750x400")
 
+        screen_width = self.root.winfo_screenwidth()
+        screen_height = self.root.winfo_screenheight()
+
+        window_width = 750
+        window_height = 400
+
+        x = (screen_width - window_width) // 2
+        y = (screen_height - window_height) // 2
+
+        self.root.geometry(f"{window_width}x{window_height}+{x}+{y}")
         self.lista_aplicacoes = tk.Listbox(root)
         self.lista_aplicacoes.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
 
@@ -25,6 +62,7 @@ class Historico:
         tk.Button(root, text="Voltar", command=self.voltar).pack(side=tk.LEFT, padx=10, pady=10)
         tk.Button(root, text="Visualizar PDF", command=self.visualizar_pdf).pack(side=tk.LEFT, padx=10, pady=10)
         tk.Button(root, text="Visualizar por Data", command=self.visualizar_data).pack(side=tk.LEFT, padx=10, pady=10)
+
 
     def carregar_historico(self):
         try:
