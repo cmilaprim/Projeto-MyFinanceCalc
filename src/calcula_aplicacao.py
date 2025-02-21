@@ -84,17 +84,17 @@ class Aplicacao:
 
             resultado = {
                 "Data": data_atual.strftime('%d/%m/%Y'),
-                "Valor Aplicado": f"R${valor_aplicado:.2f}",
-                "Selic": f"{self.taxa}%",
-                "Taxa": f"{self.porcentagem}%",
-                "Valor Bruto": f"R${valor_bruto:.2f}",
-                "Juros": f"R${juros:.2f}",
-                "Acumulado": f"R${acumulado:.2f}",
-                "IOF": f"R${iof_dia:.2f}",
-                "Liquido": f"R${liquido:.2f}",
-                "IR": f"R${ir:.2f}",
-                "Rend Liquido": f"R${rendimento_liquido:.2f}",
-                "Aliq IOF": f"{aliquota_iof}" 
+                "Valor Aplicado": self.valor,
+                "Selic": self.taxa,
+                "Taxa": self.porcentagem,
+                "Valor Bruto":valor_bruto,
+                "Juros":juros,
+                "Acumulado": acumulado,
+                "IOF": iof_dia,
+                "Liquido": liquido,
+                "IR": ir,
+                "Rend Liquido": rendimento_liquido,
+                "Aliq IOF": aliquota_iof
             }
 
             self.resultados.append(resultado)

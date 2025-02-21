@@ -14,6 +14,28 @@ class geraDocumento():
 
         return os.path.join(base_caminho, relativo)
 
+    def formatar_valor_brasileiro(self, valor):
+        if isinstance(valor, float):
+            return f"R$ {valor:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
+        return str(valor)
+
+    def ajustar_largura_colunas(self, pdf, colunas, dados):
+        max_largura = pdf.w - 20  # Largura máxima da página com margens
+        col_widths = [pdf.get_string_width(col) + 10 for col in colunas]
+
+        for linha in dados:
+            for i, valor in enumerate(linha):
+                largura_valor = pdf.get_string_width(str(valor)) + 10
+                if largura_valor > col_widths[i]:
+                    col_widths[i] = largura_valor
+
+        largura_total = sum(col_widths)
+        if largura_total > max_largura:
+            proporcao = max_largura / largura_total
+            col_widths = [largura * proporcao for largura in col_widths]
+
+        return col_widths
+
     def gerar_pdf(self, resultados):
         if not resultados:
             raise ValueError("A lista de resultados está vazia.")
@@ -21,7 +43,7 @@ class geraDocumento():
         ultimo_resultado = resultados[-1]
         colunas = list(ultimo_resultado.keys())
 
-        pdf = FPDF(orientation='L', format='A4')
+        pdf = FPDF(orientation='L', format='A4')  # Alterar para paisagem e formato A3
         pdf.add_page()
         pdf.set_font("Arial", size=9)
         
@@ -30,11 +52,12 @@ class geraDocumento():
         pdf.ln(20)
         
         data_abertura = ultimo_resultado.get("Data", "Desconhecida")
-        pdf.set_font("Arial", style='B', size=10)
+        pdf.set_font("Arial", style='B', size=15)
         pdf.cell(0, 10, f"RESULTADO DA APLICAÇÃO FINANCEIRA", ln=True, align='C')
         pdf.ln(2)
         
-        col_widths = [pdf.get_string_width(col) + 10 for col in colunas]
+        dados = [[self.formatar_valor_brasileiro(ultimo_resultado.get(chave, "")) for chave in colunas]]
+        col_widths = self.ajustar_largura_colunas(pdf, colunas, dados)
         row_height = 5 
         
         pdf.set_fill_color(200, 200, 200)
@@ -46,9 +69,8 @@ class geraDocumento():
         pdf.set_font("Arial", size=9)
         for i, chave in enumerate(colunas):
             valor = ultimo_resultado.get(chave, "")
-            if isinstance(valor, float):
-                valor = f"{valor:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
-            pdf.cell(col_widths[i], row_height, str(valor), border=0.2, align='C')
+            valor = self.formatar_valor_brasileiro(valor)
+            pdf.cell(col_widths[i], row_height, valor, border=0.2, align='C')
         pdf.ln()
         
         if not os.path.exists("data"):
@@ -68,7 +90,7 @@ class geraDocumento():
 
         colunas = [chave for chave in resultado.keys() if chave != "Selic"]
 
-        pdf = FPDF(orientation='L', format='A4')
+        pdf = FPDF(orientation='L', format='A4')  # Alterar para paisagem e formato A3
         pdf.add_page()
         pdf.set_font("Arial", size=9)
         
@@ -77,11 +99,12 @@ class geraDocumento():
         pdf.ln(20)
         
         data_abertura = resultado.get("Data", "Desconhecida")
-        pdf.set_font("Arial", style='B', size=10)
+        pdf.set_font("Arial", style='B', size=15)
         pdf.cell(0, 10, f"Posição de abertura {data_abertura}", ln=True, align='C')
         pdf.ln(2)
         
-        col_widths = [pdf.get_string_width(col) + 10 for col in colunas]
+        dados = [[self.formatar_valor_brasileiro(resultado.get(chave, "")) for chave in colunas]]
+        col_widths = self.ajustar_largura_colunas(pdf, colunas, dados)
         row_height = 5 
         
         # Centralizar tabela
@@ -99,9 +122,8 @@ class geraDocumento():
         pdf.set_font("Arial", size=9)
         for i, chave in enumerate(colunas):
             valor = resultado.get(chave, "")
-            if isinstance(valor, float):
-                valor = f"{valor:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
-            pdf.cell(col_widths[i], row_height, str(valor), border=0.2, align='C')
+            valor = self.formatar_valor_brasileiro(valor)
+            pdf.cell(col_widths[i], row_height, valor, border=0.2, align='C')
         pdf.ln()
         
         if not os.path.exists("data"):

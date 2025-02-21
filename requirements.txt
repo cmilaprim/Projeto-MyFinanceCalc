@@ -1,3 +1,2 @@
 pyinstaller==4.5.1
-tkinter==0.1.0
-fpdf==1.7.2
+sfpdf==1.7.2
