@@ -1,5 +1,4 @@
 import datetime
-from gera_documento import geraDocumento
 
 class Aplicacao:
     def __init__(self, valor, taxa, porcentagem, data_inicial, data_final):

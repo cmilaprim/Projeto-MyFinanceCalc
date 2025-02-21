@@ -46,11 +46,14 @@ class TelaInicial:
     def calcular_exportar(self):
         try:
             nome = self.nome_aplicacao.get()
-            valor = float(self.valor_aplicacao.get())
+            valor = self.valor_aplicacao.get().replace('.', '').replace(',', '.')
+            valor = float(valor)
             data_inicial = self.data_inicial.get()
             data_final = self.data_final.get()
-            taxa_selic = float(self.taxa_selic.get())
-            percentual_cdi = float(self.percentual_cdi.get())
+            taxa_selic = self.taxa_selic.get().replace(',', '.')
+            taxa_selic = float(taxa_selic)
+            percentual_cdi = self.percentual_cdi.get().replace(',', '.')
+            percentual_cdi = float(percentual_cdi)
 
             aplicacao = Aplicacao(valor, taxa_selic, percentual_cdi, data_inicial, data_final)
             resultados = aplicacao.calcula_aplicacao()

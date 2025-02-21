@@ -19,135 +19,95 @@ class geraDocumento():
             raise ValueError("A lista de resultados está vazia.")
 
         ultimo_resultado = resultados[-1]
+        colunas = list(ultimo_resultado.keys())
 
         pdf = FPDF(orientation='L', format='A4')
         pdf.add_page()
-        pdf.set_font("Arial", size=12)
-
+        pdf.set_font("Arial", size=9)
+        
         caminho_imagem = self.recurso_caminho("assets/logo-empresa.png")
-
-        # Adicionar logo
         pdf.image(caminho_imagem, x=10, y=10, w=35)
-        pdf.ln(20)  # Adiciona um espaço após a imagem
-
-        # Cabeçalho
-        pdf.set_font("Arial", style='B', size=12)
-        pdf.cell(0, 10, "Resultado da Aplicação", ln=True, align='C')
-        pdf.ln(5)
-
-        # Medidas da página
-        margem = 10
-        largura_total = pdf.w - 2 * margem  # Considera as margens
-        num_colunas = len(ultimo_resultado)
-
-        # Calcular largura ideal das colunas com base no maior conteúdo
-        pdf.set_font("Arial", size=10)
-        col_widths = []
-        for chave, valor in ultimo_resultado.items():
-            largura_chave = pdf.get_string_width(chave) + 10
-            largura_valor = pdf.get_string_width(str(valor)) + 10
-            col_widths.append(max(largura_chave, largura_valor))
-
-        # Normalizar para não ultrapassar a página
-        fator_ajuste = largura_total / sum(col_widths)
-        col_widths = [largura * fator_ajuste for largura in col_widths]
-
-        row_height = 8  # Altura padrão das linhas
-
-        # Criar cabeçalho da tabela
+        pdf.ln(20)
+        
+        data_abertura = ultimo_resultado.get("Data", "Desconhecida")
         pdf.set_font("Arial", style='B', size=10)
-        for i, chave in enumerate(ultimo_resultado.keys()):
-            pdf.cell(col_widths[i], row_height, chave, border=1, align='C')
+        pdf.cell(0, 10, f"RESULTADO DA APLICAÇÃO FINANCEIRA", ln=True, align='C')
+        pdf.ln(2)
+        
+        col_widths = [pdf.get_string_width(col) + 10 for col in colunas]
+        row_height = 5 
+        
+        pdf.set_fill_color(200, 200, 200)
+        pdf.set_font("Arial", style='B', size=9)
+        for i, coluna in enumerate(colunas):
+            pdf.cell(col_widths[i], row_height, coluna, border=0.2, align='C', fill=True)
         pdf.ln()
-
-        # Preencher dados da tabela
-        pdf.set_font("Arial", size=10)
-        for i, valor in enumerate(ultimo_resultado.values()):
+        
+        pdf.set_font("Arial", size=9)
+        for i, chave in enumerate(colunas):
+            valor = ultimo_resultado.get(chave, "")
             if isinstance(valor, float):
-                valor = f"{valor:.2f}"  # Formata valores numéricos com 2 casas decimais
-            pdf.cell(col_widths[i], row_height, str(valor), border=1, align='C')
+                valor = f"{valor:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
+            pdf.cell(col_widths[i], row_height, str(valor), border=0.2, align='C')
         pdf.ln()
-
-        # Criar pasta "data" se não existir
+        
         if not os.path.exists("data"):
             os.makedirs("data")
-
-        # Caminho do PDF
-        pdf_path = os.path.abspath("data/resultado.pdf")
+        
+        pdf_path = os.path.abspath("data/extrato.pdf")
         pdf.output(pdf_path)
-
-        # Verifica se o arquivo foi realmente criado
-        if not os.path.exists(pdf_path):
-            raise FileNotFoundError(f"O arquivo PDF não foi encontrado em: {pdf_path}")
-
-        print(f"Tentando abrir o arquivo: {pdf_path}")
+        print(f"PDF gerado: {pdf_path}")
         os.startfile(pdf_path)
     
-    def gerar_pdf_especifico(self, resultados):
-        if not resultados:
-            raise ValueError("A lista de resultados está vazia.")
+    def gerar_pdf_especifico(self, resultado):
+        if not resultado:
+            raise ValueError("O resultado está vazio.")
+
+        if "Selic" in resultado:
+            del resultado["Selic"]
+
+        colunas = [chave for chave in resultado.keys() if chave != "Selic"]
 
         pdf = FPDF(orientation='L', format='A4')
         pdf.add_page()
-        pdf.set_font("Arial", size=12)
-
+        pdf.set_font("Arial", size=9)
+        
         caminho_imagem = self.recurso_caminho("assets/logo-empresa.png")
-
-        # Adicionar logo
         pdf.image(caminho_imagem, x=10, y=10, w=35)
-        pdf.ln(20)  # Adiciona um espaço após a imagem
-
-        # Cabeçalho
-        pdf.set_font("Arial", style='B', size=12)
-        pdf.cell(0, 10, "Resultado da Aplicação", ln=True, align='C')
-        pdf.ln(5)
-
-        # Medidas da página
-        margem = 10
-        largura_total = pdf.w - 2 * margem  # Considera as margens
-        num_colunas = len(resultados)
-
-        # Calcular largura ideal das colunas com base no maior conteúdo
-        pdf.set_font("Arial", size=10)
-        col_widths = []
-        for chave, valor in resultados.items():
-            largura_chave = pdf.get_string_width(chave) + 10
-            largura_valor = pdf.get_string_width(str(valor)) + 10
-            col_widths.append(max(largura_chave, largura_valor))
-
-        # Normalizar para não ultrapassar a página
-        fator_ajuste = largura_total / sum(col_widths)
-        col_widths = [largura * fator_ajuste for largura in col_widths]
-
-        row_height = 8  # Altura padrão das linhas
-
-        # Criar cabeçalho da tabela
+        pdf.ln(20)
+        
+        data_abertura = resultado.get("Data", "Desconhecida")
         pdf.set_font("Arial", style='B', size=10)
-        for i, chave in enumerate(resultados.keys()):
-            pdf.cell(col_widths[i], row_height, chave, border=1, align='C')
+        pdf.cell(0, 10, f"Posição de abertura {data_abertura}", ln=True, align='C')
+        pdf.ln(2)
+        
+        col_widths = [pdf.get_string_width(col) + 10 for col in colunas]
+        row_height = 5 
+        
+        # Centralizar tabela
+        largura_total = sum(col_widths)
+        x_offset = (pdf.w - largura_total) / 2
+        pdf.set_x(x_offset)
+        
+        pdf.set_fill_color(200, 200, 200)
+        pdf.set_font("Arial", style='B', size=9)
+        for i, coluna in enumerate(colunas):
+            pdf.cell(col_widths[i], row_height, coluna, border=0.2, align='C', fill=True)
         pdf.ln()
-
-        # Preencher dados da tabela
-        pdf.set_font("Arial", size=10)
-        for i, valor in enumerate(resultados.values()):
+        
+        pdf.set_x(x_offset)
+        pdf.set_font("Arial", size=9)
+        for i, chave in enumerate(colunas):
+            valor = resultado.get(chave, "")
             if isinstance(valor, float):
-                valor = f"{valor:.2f}"  # Formata valores numéricos com 2 casas decimais
-            pdf.cell(col_widths[i], row_height, str(valor), border=1, align='C')
+                valor = f"{valor:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
+            pdf.cell(col_widths[i], row_height, str(valor), border=0.2, align='C')
         pdf.ln()
-
-        # Criar pasta "data" se não existir
+        
         if not os.path.exists("data"):
             os.makedirs("data")
-
-        # Caminho do PDF
+        
         pdf_path = os.path.abspath("data/resultado.pdf")
         pdf.output(pdf_path)
-
-        # Verifica se o arquivo foi realmente criado
-        if not os.path.exists(pdf_path):
-            raise FileNotFoundError(f"O arquivo PDF não foi encontrado em: {pdf_path}")
-
-        print(f"Tentando abrir o arquivo: {pdf_path}")
+        print(f"PDF gerado: {pdf_path}")
         os.startfile(pdf_path)
-        
-        

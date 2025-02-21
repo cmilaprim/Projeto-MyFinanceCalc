@@ -4,3 +4,7 @@
 
 data/resultado.pdf
 historico.pkl
+*.pdf
+extrator.pdf
+
+.test/

@@ -39,8 +39,8 @@ class Historico:
             messagebox.showinfo("Info", "Nenhum histórico encontrado.")
 
     def adicionar_aplicacao(self):
-        from tela_inicial import TelaInicial  # Importar aqui para evitar importação circular
-        self.root.destroy()  # Fecha a tela de histórico
+        from tela_inicial import TelaInicial 
+        self.root.destroy()  
         root_inicial = tk.Tk()
         app_inicial = TelaInicial(root_inicial)
         root_inicial.mainloop()
@@ -52,7 +52,7 @@ class Historico:
             with open("data/historico.pkl", "rb") as f:
                 historico = pickle.load(f)
             aplicacao = historico[index]
-            self.abrir_editor(aplicacao, index, historico)  # Passar o histórico como argumento
+            self.abrir_editor(aplicacao, index, historico) 
         else:
             messagebox.showwarning("Aviso", "Nenhuma aplicação selecionada.")
 
@@ -113,12 +113,12 @@ class Historico:
             data_mudanca.grid(row=1, column=1, padx=10, pady=10)
 
             def salvar_taxa():
-                nova_taxa_valor = float(nova_taxa.get())
+                nova_taxa_valor = nova_taxa.get().replace(',', '.')
+                nova_taxa_valor = float(nova_taxa_valor)
                 data_mudanca_valor = data_mudanca.get()
 
-                print(f"Recalculando com nova taxa: {nova_taxa_valor} e data de mudança: {data_mudanca_valor}")  # Log
+                print(f"Recalculando com nova taxa: {nova_taxa_valor} e data de mudança: {data_mudanca_valor}")  
 
-                # Recalcular os resultados com a nova taxa a partir da data de mudança
                 aplicacao_obj = Aplicacao(
                     aplicacao["Valor"], 
                     aplicacao["Taxa Selic"], 
@@ -128,25 +128,21 @@ class Historico:
                 )
                 aplicacao["Resultados"] = aplicacao_obj.calcula_aplicacao(nova_taxa=nova_taxa_valor, data_taxa_nova=data_mudanca_valor)
 
-                print("Resultados recalculados:", aplicacao["Resultados"])  # Log
+                print("Resultados recalculados:", aplicacao["Resultados"]) 
 
-                # Atualizar a taxa Selic na aplicação
                 aplicacao["Taxa Selic"] = nova_taxa_valor
 
-                # Salvar o histórico atualizado
                 with open("data/historico.pkl", "wb") as f:
                     pickle.dump(historico, f)
 
-                print("Histórico atualizado e salvo.")  # Log
+                print("Histórico atualizado e salvo.")  
 
                 messagebox.showinfo("Sucesso", "Taxa Selic alterada e PDF gerado com sucesso!")
                 editor_taxa.destroy()
 
-                # Gerar o PDF com os resultados atualizados
                 gerador = geraDocumento()
                 gerador.gerar_pdf(aplicacao["Resultados"])
 
-                # Recarregar o histórico para refletir as alterações
                 self.lista_aplicacoes.delete(0, tk.END)
                 self.carregar_historico()
 
@@ -168,54 +164,13 @@ class Historico:
         else:
             messagebox.showwarning("Aviso", "Nenhuma aplicação selecionada.")
     
-    # def visualizar_data(self):
-    #     selecionado = self.lista_aplicacoes.curselection()
-    #     if selecionado:
-    #         index = selecionado[0]
-    #         with open("data/historico.pkl", "rb") as f:
-    #             historico = pickle.load(f)
-    #         aplicacao = historico[index]
-            
-    #         inserir_data = tk.Toplevel(self.root)
-    #         inserir_data.title("Visualizar aplicação por data")
-            
-    #         tk.Label(inserir_data, text="Dia da aplicação (dd/mm/aaaa): ").grid(row=0, column=0, padx=10, pady=10)
-    #         data_aplicacao = tk.Entry(inserir_data)
-    #         data_aplicacao.grid(row=0, column=1, padx=10, pady=10)
-            
-    #         def buscar_aplicacao():
-    #             data = data_aplicacao.get()
-    #             aplicacao_encontrada = None
-    #             for aplicacao in historico:
-    #                 if aplicacao["Data Inicial"] == data:
-    #                     aplicacao_encontrada = aplicacao
-    #                     break
-                
-    #             if aplicacao_encontrada:
-    #                 messagebox.showinfo("Aplicação Encontrada", f"Aplicação: {aplicacao_encontrada['Nome']}\nValor: {aplicacao_encontrada['Valor']}")
-    #                 gerador = geraDocumento()
-    #                 gerador.gerar_pdf(aplicacao_encontrada["Resultados"])
-    #                 messagebox.showinfo("Sucesso", "PDF gerado com sucesso!")
-    #             else:
-    #                 messagebox.showwarning("Aviso", "Nenhuma aplicação encontrada para a data fornecida.")
-            
-    #         tk.Button(inserir_data, text="Buscar", command=buscar_aplicacao).grid(row=1, column=0, columnspan=2, pady=10)
-    #     else:
-    #         messagebox.showwarning("Aviso", "Nenhuma aplicação selecionada.")
-    
     def visualizar_data(self):
         selecionado = self.lista_aplicacoes.curselection()
         if selecionado:
             index = selecionado[0]
-            
-            # Carregar os dados da aplicação armazenada no histórico
             with open("data/historico.pkl", "rb") as f:
                 historico = pickle.load(f)
-            
-            # Recupera a aplicação selecionada
             aplicacao = historico[index]
-
-            # Criação da janela para digitar a data
             inserir_data = tk.Toplevel(self.root)
             inserir_data.title("Visualizar aplicação por data")
             
@@ -227,13 +182,15 @@ class Historico:
                 data = data_aplicacao.get()
                 aplicacao_encontrada = None
                 
-                # Busca na lista de resultados pela data fornecida
                 for resultado in aplicacao["Resultados"]:
                     if resultado["Data"] == data:
                         aplicacao_encontrada = resultado
                         break
                 
                 if aplicacao_encontrada:
+                    if "Selic" in aplicacao_encontrada:
+                        del aplicacao_encontrada["Selic"]
+                    
                     gerador = geraDocumento()
                     gerador.gerar_pdf_especifico(aplicacao_encontrada)
                     messagebox.showinfo("Sucesso", "PDF gerado com sucesso!")
@@ -244,8 +201,6 @@ class Historico:
         else:
             messagebox.showwarning("Aviso", "Nenhuma aplicação selecionada.")
 
-        
-    
     def voltar(self):
         from tela_inicial import TelaInicial
         self.root.destroy()  # Fecha a tela de histórico

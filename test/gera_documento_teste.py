@@ -234,7 +234,7 @@ class ExtratoPDF(FPDF):
 
 # Exemplo de uso com várias aplicações
 dados_exemplo = [
-    {"Data": "12/02/2025", "Valor Aplicado": 10000.00, "Selic": 0.10, "Taxa": 0.15, "Valor Bruto": 10150.00,
+    {"Data": "12/02/2025", "Valor Aplicado": 1000000000.00, "Selic": 0.10, "Taxa": 0.15, "Valor Bruto": 100000150.00,
      "Juros": 150.00, "Acumulado": 10200.00, "IOF": 5.00, "Líquido": 10195.00, "IR": 22.50, "Rend. Líquido": 100.00,
      "Aliq IOF": 0.5}
 ]
