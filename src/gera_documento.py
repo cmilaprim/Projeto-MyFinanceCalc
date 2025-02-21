@@ -14,9 +14,11 @@ class geraDocumento():
 
         return os.path.join(base_caminho, relativo)
 
-    def formatar_valor_brasileiro(self, valor):
+    def formatar_valor_brasileiro(self, valor, chave=None):
         if isinstance(valor, float):
-            return f"R$ {valor:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
+            if chave in ["Selic", "Percentual CDI"]:
+                return f"{valor:.2f}%".replace(".", ",")
+            return f"R$ {valor:.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
         return str(valor)
 
     def ajustar_largura_colunas(self, pdf, colunas, dados):
@@ -41,6 +43,10 @@ class geraDocumento():
             raise ValueError("A lista de resultados está vazia.")
 
         ultimo_resultado = resultados[-1]
+        
+        if "Valor Aplicado" in ultimo_resultado:
+            del ultimo_resultado["Valor Aplicado"]
+        
         colunas = list(ultimo_resultado.keys())
 
         pdf = FPDF(orientation='L', format='A4')  # Alterar para paisagem e formato A3
@@ -56,7 +62,7 @@ class geraDocumento():
         pdf.cell(0, 10, f"RESULTADO DA APLICAÇÃO FINANCEIRA", ln=True, align='C')
         pdf.ln(2)
         
-        dados = [[self.formatar_valor_brasileiro(ultimo_resultado.get(chave, "")) for chave in colunas]]
+        dados = [[self.formatar_valor_brasileiro(ultimo_resultado.get(chave, ""), chave) for chave in colunas]]
         col_widths = self.ajustar_largura_colunas(pdf, colunas, dados)
         row_height = 5 
         
@@ -69,7 +75,7 @@ class geraDocumento():
         pdf.set_font("Arial", size=9)
         for i, chave in enumerate(colunas):
             valor = ultimo_resultado.get(chave, "")
-            valor = self.formatar_valor_brasileiro(valor)
+            valor = self.formatar_valor_brasileiro(valor, chave)
             pdf.cell(col_widths[i], row_height, valor, border=0.2, align='C')
         pdf.ln()
         
@@ -87,6 +93,12 @@ class geraDocumento():
 
         if "Selic" in resultado:
             del resultado["Selic"]
+            
+        if "Juros" in resultado:
+            del resultado["Juros"]
+        
+        if "Valor Aplicado" in resultado:
+            del resultado["Valor Aplicado"]
 
         colunas = [chave for chave in resultado.keys() if chave != "Selic"]
 
@@ -103,7 +115,7 @@ class geraDocumento():
         pdf.cell(0, 10, f"Posição de abertura {data_abertura}", ln=True, align='C')
         pdf.ln(2)
         
-        dados = [[self.formatar_valor_brasileiro(resultado.get(chave, "")) for chave in colunas]]
+        dados = [[self.formatar_valor_brasileiro(resultado.get(chave, ""), chave) for chave in colunas]]
         col_widths = self.ajustar_largura_colunas(pdf, colunas, dados)
         row_height = 5 
         
@@ -122,7 +134,7 @@ class geraDocumento():
         pdf.set_font("Arial", size=9)
         for i, chave in enumerate(colunas):
             valor = resultado.get(chave, "")
-            valor = self.formatar_valor_brasileiro(valor)
+            valor = self.formatar_valor_brasileiro(valor, chave)
             pdf.cell(col_widths[i], row_height, valor, border=0.2, align='C')
         pdf.ln()
         

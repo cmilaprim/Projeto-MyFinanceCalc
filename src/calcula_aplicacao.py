@@ -1,4 +1,5 @@
 import datetime
+from gera_documento import geraDocumento
 
 class Aplicacao:
     def __init__(self, valor, taxa, porcentagem, data_inicial, data_final):
@@ -58,7 +59,7 @@ class Aplicacao:
                 forumula = taxa_diaria * (self.porcentagem / 100)
                 # O valor aplicado no dia da mudança de taxa é o valor bruto do dia anterior
                 if i > 0:
-                    valor_aplicado = float(self.resultados[-1]["Valor Aplicado"].replace("R$", "").strip())
+                    valor_aplicado = float(self.resultados[-1]["Valor Aplicado"])
 
             if i == 0:
                 juros = 0
@@ -70,12 +71,8 @@ class Aplicacao:
             
             acumulado += juros
 
-            if dias < 30:
-                aliquota_iof = self.calcular_iof(i) 
-                iof_dia = acumulado * aliquota_iof
-            else:
-                aliquota_iof = 0
-                iof_dia = 0
+            aliquota_iof = self.calcular_iof(i) if i < 30 else 0
+            iof_dia = acumulado * aliquota_iof
 
             liquido = acumulado - iof_dia
             ir = liquido * self.calcular_ir(i)
@@ -84,19 +81,26 @@ class Aplicacao:
 
             resultado = {
                 "Data": data_atual.strftime('%d/%m/%Y'),
-                "Valor Aplicado": self.valor,
+                "Valor inicial": self.valor,
+                "Valor Aplicado": valor_aplicado,
                 "Selic": self.taxa,
-                "Taxa": self.porcentagem,
-                "Valor Bruto":valor_bruto,
-                "Juros":juros,
+                "Percentual CDI": self.porcentagem,
+                "Valor Bruto": valor_bruto,
+                "Juros": juros,
                 "Acumulado": acumulado,
                 "IOF": iof_dia,
                 "Liquido": liquido,
                 "IR": ir,
                 "Rend Liquido": rendimento_liquido,
-                "Aliq IOF": aliquota_iof
+                "Aliq IOF": aliquota_iof 
             }
 
             self.resultados.append(resultado)
         
         return self.resultados
+    
+# aplicacao = Aplicacao(250, 12.15, 100, "09/01/2025", "05/03/2025")
+# resultados = aplicacao.calcula_aplicacao()
+
+# for resultado in resultados:
+#     print(resultado)
