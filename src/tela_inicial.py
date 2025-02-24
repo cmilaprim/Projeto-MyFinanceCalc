@@ -5,6 +5,7 @@ from gera_documento import geraDocumento
 import pickle
 import os
 from historico import Historico
+from tkcalendar import DateEntry  # Adicione esta linha
 
 class TelaInicial:
     def __init__(self, root):
@@ -27,11 +28,11 @@ class TelaInicial:
         self.nome_aplicacao.grid(row=0, column=1, padx=10, pady=10)
 
         tk.Label(root, text="Data Inicial (dd/mm/aaaa)").grid(row=1, column=0, padx=10, pady=10)
-        self.data_inicial = tk.Entry(root)
+        self.data_inicial = DateEntry(root, date_pattern='dd/mm/yyyy') 
         self.data_inicial.grid(row=1, column=1, padx=10, pady=10)
 
         tk.Label(root, text="Data Final (dd/mm/aaaa)").grid(row=2, column=0, padx=10, pady=10)
-        self.data_final = tk.Entry(root)
+        self.data_final = DateEntry(root, date_pattern='dd/mm/yyyy') 
         self.data_final.grid(row=2, column=1, padx=10, pady=10)
         
         tk.Label(root, text="Valor da Aplicação").grid(row=3, column=0, padx=10, pady=10)

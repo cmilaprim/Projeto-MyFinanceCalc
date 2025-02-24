@@ -4,6 +4,7 @@ from gera_documento import geraDocumento
 import pickle
 from calcula_aplicacao import Aplicacao
 import os
+from tkcalendar import DateEntry  # Adicione esta linha
 
 
 class Historico:
@@ -119,7 +120,7 @@ class Historico:
             nova_taxa.grid(row=0, column=1, padx=10, pady=10)
 
             tk.Label(editor_taxa, text="Data da Mudança (dd/mm/aaaa)").grid(row=1, column=0, padx=10, pady=10)
-            data_mudanca = tk.Entry(editor_taxa)
+            data_mudanca = DateEntry(editor_taxa, date_pattern='dd/mm/yyyy')  # Modifique esta linha
             data_mudanca.grid(row=1, column=1, padx=10, pady=10)
 
             def salvar_taxa():
@@ -182,7 +183,7 @@ class Historico:
             inserir_data.title("Visualizar aplicação por data")
             
             tk.Label(inserir_data, text="Dia da aplicação (dd/mm/aaaa): ").grid(row=0, column=0, padx=10, pady=10)
-            data_aplicacao = tk.Entry(inserir_data)
+            data_aplicacao = DateEntry(inserir_data, date_pattern='dd/mm/yyyy')  # Modifique esta linha
             data_aplicacao.grid(row=0, column=1, padx=10, pady=10)
             
             def buscar_aplicacao():
