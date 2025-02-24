@@ -18,7 +18,7 @@ class geraDocumento():
         if isinstance(valor, float):
             if chave in ["Selic", "Percentual CDI"]:
                 return f"{valor:.2f}%".replace(".", ",")
-            return f"R$ {valor:.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
+            return f"R$ {valor:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
         return str(valor)
 
     def ajustar_largura_colunas(self, pdf, colunas, dados):

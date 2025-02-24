@@ -127,8 +127,6 @@ class Historico:
                 nova_taxa_valor = float(nova_taxa_valor)
                 data_mudanca_valor = data_mudanca.get()
 
-                print(f"Recalculando com nova taxa: {nova_taxa_valor} e data de mudança: {data_mudanca_valor}")  
-
                 aplicacao_obj = Aplicacao(
                     aplicacao["Valor"], 
                     aplicacao["Taxa Selic"], 
@@ -136,16 +134,15 @@ class Historico:
                     aplicacao["Data Inicial"], 
                     aplicacao["Data Final"]
                 )
-                aplicacao["Resultados"] = aplicacao_obj.calcula_aplicacao(nova_taxa=nova_taxa_valor, data_taxa_nova=data_mudanca_valor)
+                for mudanca in aplicacao.get("Mudancas Taxa", []):
+                    aplicacao_obj.adiciona_mudanca_taxa(mudanca[0], mudanca[1])
+                aplicacao_obj.adiciona_mudanca_taxa(nova_taxa_valor, data_mudanca_valor)
+                aplicacao["Resultados"] = aplicacao_obj.calcula_aplicacao()
 
-                print("Resultados recalculados:", aplicacao["Resultados"]) 
-
-                aplicacao["Taxa Selic"] = nova_taxa_valor
+                aplicacao["Mudancas Taxa"] = aplicacao_obj.mudancas_taxa
 
                 with open("data/historico.pkl", "wb") as f:
                     pickle.dump(historico, f)
-
-                print("Histórico atualizado e salvo.")  
 
                 messagebox.showinfo("Sucesso", "Taxa Selic alterada e PDF gerado com sucesso!")
                 editor_taxa.destroy()

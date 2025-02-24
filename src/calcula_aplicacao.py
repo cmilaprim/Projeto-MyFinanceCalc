@@ -9,6 +9,10 @@ class Aplicacao:
         self.data_inicial = data_inicial
         self.data_final = data_final
         self.resultados = []
+        self.mudancas_taxa = []
+
+    def adiciona_mudanca_taxa(self, nova_taxa, data_taxa_nova):
+        self.mudancas_taxa.append((nova_taxa, data_taxa_nova))
 
     def calcula_periodo(self):
         data_inicial = datetime.datetime.strptime(self.data_inicial, '%d/%m/%Y')
@@ -38,7 +42,7 @@ class Aplicacao:
         else:
             return 0.15
         
-    def calcula_aplicacao(self, nova_taxa=None, data_taxa_nova=None):
+    def calcula_aplicacao(self):
         dias, data_inicial = self.calcula_periodo()
         taxa_diaria = ((1 + self.taxa / 100) ** (1 / 252) - 1)  
         forumula = taxa_diaria * (self.porcentagem / 100)
@@ -53,13 +57,14 @@ class Aplicacao:
                 continue
 
             # Verifica se a taxa deve ser alterada no dia atual
-            if data_taxa_nova and data_atual.strftime('%d/%m/%Y') == data_taxa_nova:
-                self.taxa = nova_taxa
-                taxa_diaria = ((1 + self.taxa / 100) ** (1 / 252) - 1)
-                forumula = taxa_diaria * (self.porcentagem / 100)
-                # O valor aplicado no dia da mudança de taxa é o valor bruto do dia anterior
-                if i > 0:
-                    valor_aplicado = float(self.resultados[-1]["Valor Aplicado"])
+            for nova_taxa, data_taxa_nova in self.mudancas_taxa:
+                if data_atual.strftime('%d/%m/%Y') == data_taxa_nova:
+                    self.taxa = nova_taxa
+                    taxa_diaria = ((1 + self.taxa / 100) ** (1 / 252) - 1)
+                    forumula = taxa_diaria * (self.porcentagem / 100)
+                    # O valor aplicado no dia da mudança de taxa é o valor bruto do dia anterior
+                    if i > 0:
+                        valor_aplicado = float(self.resultados[-1]["Valor Aplicado"])
 
             if i == 0:
                 juros = 0
@@ -98,9 +103,13 @@ class Aplicacao:
             self.resultados.append(resultado)
         
         return self.resultados
-    
-# aplicacao = Aplicacao(250, 12.15, 100, "09/01/2025", "05/03/2025")
-# resultados = aplicacao.calcula_aplicacao()
 
-# for resultado in resultados:
-#     print(resultado)
+if __name__ == "__main__":
+    aplicacao = Aplicacao(250, 12.15, 100, '09/01/2025', '05/03/2025')
+    aplicacao.adiciona_mudanca_taxa(10, '27/01/2025')
+    # aplicacao.adiciona_mudanca_taxa(13.15, '24/02/2025')
+    aplicacao.calcula_aplicacao()
+
+    print("Aplicação de R$250,00 com taxa de 12.15% ao ano e 100% do CDI")
+    for resultado in aplicacao.resultados:
+        print(resultado)
