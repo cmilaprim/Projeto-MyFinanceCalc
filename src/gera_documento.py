@@ -16,8 +16,8 @@ class geraDocumento():
 
     def formatar_valor_brasileiro(self, valor, chave=None):
         if isinstance(valor, float):
-            if chave in ["Selic", "Percentual CDI"]:
-                return f"{valor:.2f}%".replace(".", ",")
+            if chave in ["Selic", "Percentual CDI", "Aliq IOF"]:
+                return f"{valor:,.2f}%".replace(",", "X").replace(".", ",").replace("X", ".")
             return f"R$ {valor:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
         return str(valor)
 

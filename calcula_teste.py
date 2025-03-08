@@ -1,5 +1,4 @@
 import datetime
-from gera_documento import geraDocumento
 
 class Aplicacao:
     def __init__(self, valor, taxa, porcentagem, data_inicial, data_final):
@@ -45,7 +44,7 @@ class Aplicacao:
     def calcula_aplicacao(self):
         dias, data_inicial = self.calcula_periodo()
         taxa_diaria = ((1 + self.taxa / 100) ** (1 / 252) - 1)  
-        forumula = taxa_diaria * (self.porcentagem / 100)
+        cdi = taxa_diaria * (self.porcentagem/100)
         valor_aplicado = self.valor
         acumulado = 0
 
@@ -61,17 +60,18 @@ class Aplicacao:
                 if data_atual.strftime('%d/%m/%Y') == data_taxa_nova:
                     self.taxa = nova_taxa
                     taxa_diaria = ((1 + self.taxa / 100) ** (1 / 252) - 1)
-                    forumula = taxa_diaria * (self.porcentagem / 100)
-                    # O valor aplicado no dia da mudança de taxa é o valor bruto do dia anterior
-                    if i > 0:
+                    cdi = taxa_diaria * (self.porcentagem/100)
+                if i > 0:
                         valor_aplicado = float(self.resultados[-1]["Valor Aplicado"])
+                
 
             if i == 0:
                 juros = 0
                 valor_bruto = valor_aplicado
             else:
                 valor_aplicado += juros
-                juros = valor_aplicado * forumula
+                juros = valor_aplicado * cdi
+                print(f"Juros: {juros} = Valor Aplicado: {valor_aplicado} x Formula: {cdi} " )
                 valor_bruto = valor_aplicado + juros
             
             acumulado += juros
@@ -105,7 +105,7 @@ class Aplicacao:
         return self.resultados
 
 if __name__ == "__main__":
-    aplicacao = Aplicacao(200000, 12.15, 100, '20/12/2024', '15/12/2026')
+    aplicacao = Aplicacao(200000, 12.15, 100, '20/12/2024', '06/02/2025')
     # aplicacao.adiciona_mudanca_taxa(10, '27/01/2025')
     aplicacao.adiciona_mudanca_taxa(13.15, '30/01/2025')
     aplicacao.calcula_aplicacao()
